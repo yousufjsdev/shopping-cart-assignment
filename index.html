@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+   <title>Shopping Cart</title>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css" rel="stylesheet" />
+   <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+
+   <section>
+      <div class="container">
+         <div class="cart">
+            <div class="col-md-12 col-lg-10 mx-auto">
+               <div id="main-container">
+                  <div class="cart-item">
+                     <div class="row">
+                        <div class="col-md-7 center-item">
+                           <img src="images/product-1.png" alt="">
+                           <h5>iPhone 11 128GB Black</h5>
+                        </div>
+   
+                        <div class="col-md-5 center-item">
+                           <div class="input-group number-spinner">
+                              <button class="counter-button btn btn-default" data-sign="minus"><i class="fas fa-minus" id="minusItem"></i></button>
+                              <input type="text" class="item-counter form-control text-center" value="1">
+                              <button class="counter-button btn btn-default" data-sign="plus"><i class="fas fa-plus"></i></button>
+                           </div>
+                           <h5>$<span class="item-price" data-price="1219">1219</span></h5>
+                           <img src="images/remove.png" alt="" class="remove-item">
+                        </div>
+                     </div>
+                  </div>
+   
+                  <div class="cart-item">
+                     <div class="row">
+                        <div class="col-md-7 center-item mx-auto">
+                           <img src="images/product-2.png" alt="">
+                           <h5>iPhone 11 Silicone Case - Black</h5>
+                        </div>
+                        <div class="col-md-5 center-item">
+                           <div class="input-group number-spinner">
+                              <button class="counter-button btn btn-default" data-sign="minus"><i class="fas fa-minus"></i></button>
+                              <input type="text" class="item-counter form-control text-center" value="1">
+                              <button class="counter-button btn btn-default" data-sign="plus"><i class="fas fa-plus"></i></button>
+                           </div>
+                           <h5>$<span class="item-price" data-price="59">59</span></h5>
+                           <img src="images/remove.png" alt="" class="remove-item">
+                        </div>
+                     </div>
+                  </div>
+   
+                  <div class="cart-item">
+                     <div class="row">
+   
+                        <div class="col-md-8">
+                           <h5>Subtotal: </h5>
+                           <h5>Tax: (05% of Subtoal)</h5>
+                           <h5>Total:</h5>
+                        </div>
+   
+                        <div class="col-md-4 status">
+                           <h5>$<span id="subtotal"></span></h5>
+                           <h5>$<span id="tax"></span></h5>
+                           <h5>$<span id="total"></span></h5>
+                        </div>
+                     </div>
+                  </div>
+                  
+                  <div class="col-md-12 pt-4 pb-4">
+                     <button id="checkout" type="button" class="btn btn-success check-out">Check Out</button>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </section>
+
+   <script>
+
+      const counterButtton = document.querySelectorAll('.counter-button');
+      let count = 0;
+      counterButtton.forEach(function(countItem){
+         countItem.addEventListener('click', function(e){
+            if(count > 0){
+               let itemCounter = e.currentTarget.parentElement.parentElement.querySelector('.item-counter'),
+               sign = e.currentTarget.dataset.sign,
+               totalAmountEl = e.currentTarget.parentElement.parentElement.querySelector('.item-price'),
+               ItemPrice = totalAmountEl.dataset.price;
+
+               // Item counter
+               itemCounter.value = sign === 'plus' ? ++itemCounter.value : itemCounter.value <= 0 ? 0 : --itemCounter.value;
+               
+               // update the price
+               totalAmountEl.innerHTML = Number(itemCounter.value) * Number(ItemPrice)
+            }
+            //update Final checkout
+            let allPriceSum = 0,
+               subtotal = document.getElementById('subtotal'),
+               tax = document.getElementById('tax'),
+               total = document.getElementById('total');
+
+            document.querySelectorAll('.item-price').forEach(function(countItem){
+               allPriceSum += Number(countItem.innerText);
+            });
+
+            outputFinalize(allPriceSum);
+
+            count++;
+         });
+      })
+      document.querySelector('.counter-button').click();
+
+      function outputFinalize(subtotalVal){
+            // Subtotal
+            subtotal.innerText = subtotalVal;
+            // tax
+            tax.innerText = (0.05 * Number(subtotal.innerText)).toFixed(2);
+            // total 
+            total.innerText = (Number(subtotal.innerText) + Number(tax.innerText)).toFixed(2);
+      }
+
+
+      // closing element
+      const closeItem = document.querySelectorAll('.remove-item');
+      closeItem.forEach(function(countItem){
+         countItem.addEventListener('click', function(e){
+            let parentEl = e.currentTarget.parentElement.parentElement.parentElement;
+            parentEl.querySelector('.item-counter').value = 0;
+            outputFinalize(Number( document.getElementById('subtotal').innerText) - parentEl.querySelector('.item-price').innerText);
+            parentEl.style.display = "none";
+         })
+      });
+
+      // checkout button
+      const checkout = document.getElementById('checkout');
+      checkout.addEventListener('click', function(){
+         document.getElementById('main-container').innerHTML = "<h1>Your order has been submitted completely.</h1>"
+         location.reload();
+      });
+   </script>
+</body>
+
+</html>
